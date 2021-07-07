@@ -8,7 +8,7 @@ import javax.persistence.*;
 public class Castle {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String identifier;
 	private String name;
@@ -44,10 +44,11 @@ public class Castle {
 	public int getId() {
 		return id;
 	}
+	
+	
 
-	public Castle(int id, String identifier, String name, String description, double length, double width, double price) {
+	public Castle(String identifier, String name, String description, double length, double width, double price) {
 	super();
-	this.id = id;
 	this.identifier = identifier;
 	this.name = name;
 	this.description = description;
@@ -55,6 +56,17 @@ public class Castle {
 	this.width = width;
 	this.price = price;
 }
+
+//	public Castle(int id, String identifier, String name, String description, double length, double width, double price) {
+//	super();
+//	this.id = id;
+//	this.identifier = identifier;
+//	this.name = name;
+//	this.description = description;
+//	this.length = length;
+//	this.width = width;
+//	this.price = price;
+//}
 
 	public void setId(int id) {
 		this.id = id;
