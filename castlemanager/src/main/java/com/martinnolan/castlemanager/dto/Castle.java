@@ -8,7 +8,7 @@ import javax.persistence.*;
 public class Castle {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY) //https://stackoverflow.com/questions/49813666/table-dbname-hibernate-sequence-doesnt-exist
 	private int id;
 	private String identifier;
 	private String name;

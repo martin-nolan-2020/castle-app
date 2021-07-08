@@ -31,7 +31,7 @@ CREATE TABLE `castle` (
   `width` double DEFAULT NULL,
   `price` double DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,14 @@ CREATE TABLE `castle` (
 
 LOCK TABLES `castle` WRITE;
 /*!40000 ALTER TABLE `castle` DISABLE KEYS */;
-INSERT INTO `castle` VALUES (1,'AC-4','145ft Assault Course','Red assault course',45.0,18.0,180.0),(2,'AC-5','35ft Assault Course','Blue assault course',35.0,18.0,160.0);
+INSERT INTO `castle` VALUES (1,'AC-4','105ft Assault Course','Red assault course',45.0,18.0,180.0),
+(2,'AC-5','35ft Assault Course','Blue assault course',35.0,18.0,160.0),
+(3,'AC-6','47ft Assault Course','Pink assault course',47.0,18.0,160.0),
+(4,'AC-7','37ft Assault Course','Yellow assault course',37.0,18.0,160.0),
+(5,'AC-8','40ft Assault Course','Purple assault course',40.0,18.0,160.0)
+
+
+;
 /*!40000 ALTER TABLE `castle` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
