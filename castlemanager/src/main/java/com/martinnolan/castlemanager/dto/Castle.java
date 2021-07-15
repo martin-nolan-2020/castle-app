@@ -8,6 +8,10 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Castle means each unit for hire")
 @Entity
 public class Castle {
 
@@ -15,21 +19,27 @@ public class Castle {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //https://stackoverflow.com/questions/49813666/table-dbname-hibernate-sequence-doesnt-exist
 	private int id;
 	@NotNull(message = "Identifier cannot be null")
+	@ApiModelProperty(notes = "Identifier cannot be null")
 	private String identifier;
 	@Size(min = 2)
+	@ApiModelProperty(notes = "Name must have at least 2 characters")
 	private String name;
 	@Size(min = 2)
+	@ApiModelProperty(notes = "Description must have at least 2 characters")
 	private String description;
 //	@OneToMany(targetEntity=Note.class, mappedBy="castle", fetch=FetchType.EAGER)
 //	private List<Note> notes;
-	@DecimalMin(value = "0.1", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
-	@DecimalMax(value = "99.9", inclusive = false)  //https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@DecimalMax(value = "100.0", inclusive = false)  //https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@ApiModelProperty(notes = "Length can be between 0.1 and 99.9")
 	private double length;
-	@DecimalMin(value = "0.1", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
-	@DecimalMax(value = "99.9", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@DecimalMax(value = "100.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@ApiModelProperty(notes = "Width can be between 0.1 and 99.9")
 	private double width;
-	@DecimalMin(value = "0.1", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
-	@DecimalMax(value = "999.9", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@DecimalMax(value = "1000.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@ApiModelProperty(notes = "Price can be between 0.1 and 999.9")
 	private double price;
 //	@OneToMany(targetEntity=Damage.class, mappedBy="castle", fetch=FetchType.EAGER)	
 //	private List<String> damage;
