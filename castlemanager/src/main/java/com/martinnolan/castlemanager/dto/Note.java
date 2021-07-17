@@ -2,6 +2,8 @@ package com.martinnolan.castlemanager.dto;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 public class Note {
@@ -11,7 +13,11 @@ public class Note {
 	private int id;
 	private String info;
 	
-	//each Note needs to belong to a Castle
+	//each Note needs to belong to a Castle. A Castle can have many Notes. Therefore, it is a ManyToOne relationship.
+	//FetchType.LAZY - this means that Note won't automatically try to fetch Castle and so avoid recursion type problems.
+	//@JsonIgnore helps with recusrion
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
 	private Castle castle;
 		
 	public Note() {

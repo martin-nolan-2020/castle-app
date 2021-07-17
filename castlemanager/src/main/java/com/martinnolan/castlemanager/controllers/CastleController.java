@@ -1,7 +1,8 @@
 package com.martinnolan.castlemanager.controllers;
 
 import java.net.URI;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.martinnolan.castlemanager.dao.CastleRepository;
 import com.martinnolan.castlemanager.dto.Castle;
-
+import com.martinnolan.castlemanager.dto.Note;
 import com.martinnolan.castlemanager.exceptions.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -42,11 +43,13 @@ public class CastleController {
 		return "this is the first test.";
 	}
 	
-	//below works
-	@GetMapping("castle-bean")
-	public Castle getCastleBean() {
-		return new Castle("BS-2", "Big slide", "Blue slide", 30.0, 25.0, 160.0);	
-	}
+	//below not working now 
+	//**** NOT FINISHED ****
+//	List<Note> twoNotesForExample = new ArrayList<>(Arrays.asList(new Note()));
+//	@GetMapping("castle-bean")
+//	public Castle getCastleBean() {
+//		return new Castle("BS-2", "Big slide", "Blue slide", null ,30.0, 25.0, 160.0);	
+//	}
 	
 	//return all castles
 	@GetMapping("castles")

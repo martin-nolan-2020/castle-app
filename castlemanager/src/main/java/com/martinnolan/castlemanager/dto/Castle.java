@@ -8,6 +8,8 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -18,24 +20,31 @@ public class Castle {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //https://stackoverflow.com/questions/49813666/table-dbname-hibernate-sequence-doesnt-exist
 	private int id;
+	
 	@NotNull(message = "Identifier cannot be null")
 	@ApiModelProperty(notes = "Identifier cannot be null")
 	private String identifier;
+	
 	@Size(min = 2)
 	@ApiModelProperty(notes = "Name must have at least 2 characters")
 	private String name;
+	
 	@Size(min = 2)
 	@ApiModelProperty(notes = "Description must have at least 2 characters")
 	private String description;
-//	@OneToMany(targetEntity=Note.class, mappedBy="castle", fetch=FetchType.EAGER)
-//	private List<Note> notes;
+	
+	@OneToMany(targetEntity=Note.class, mappedBy="castle", fetch=FetchType.EAGER)
+	private List<Note> notes;
+	
 	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
 	@DecimalMax(value = "100.0", inclusive = false)  //https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
 	@ApiModelProperty(notes = "Length can be between 0.1 and 99.9")
+	
 	private double length;
 	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
 	@DecimalMax(value = "100.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
 	@ApiModelProperty(notes = "Width can be between 0.1 and 99.9")
+	
 	private double width;
 	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
 	@DecimalMax(value = "1000.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
@@ -48,19 +57,19 @@ public class Castle {
 		super();
 	}
 
-//	public Castle(int id, String identifier, String name, String description, List<String> notes, double length,
-//			double width, double price, List<String> damage) {
-//		super();
-//		this.id = id;
-//		this.identifier = identifier;
-//		this.name = name;
-//		this.description = description;
-//		this.notes = notes;
-//		this.length = length;
-//		this.width = width;
-//		this.price = price;
-//		this.damage = damage;
-//	}
+	public Castle(String identifier, String name, String description, List<Note> notes, double length,
+			double width, double price) {
+		super();
+		//this.id = id;
+		this.identifier = identifier;
+		this.name = name;
+		this.description = description;
+		this.notes = notes;
+		this.length = length;
+		this.width = width;
+		this.price = price;
+		//this.damage = damage;
+	}
 	
 	
 
@@ -70,15 +79,15 @@ public class Castle {
 	
 	
 
-	public Castle(String identifier, String name, String description, double length, double width, double price) {
-	super();
-	this.identifier = identifier;
-	this.name = name;
-	this.description = description;
-	this.length = length;
-	this.width = width;
-	this.price = price;
-}
+//	public Castle(String identifier, String name, String description, double length, double width, double price) {
+//	super();
+//	this.identifier = identifier;
+//	this.name = name;
+//	this.description = description;
+//	this.length = length;
+//	this.width = width;
+//	this.price = price;
+//}
 
 //	public Castle(int id, String identifier, String name, String description, double length, double width, double price) {
 //	super();
@@ -119,13 +128,13 @@ public class Castle {
 		this.description = description;
 	}
 
-//	public List<String> getNotes() {
-//		return notes;
-//	}
+	public List<Note> getNotes() {
+		return notes;
+	}
 
-//	public void setNotes(List<String> notes) {
-//		this.notes = notes;
-//	}
+	public void setNotes(List<Note> notes) {
+		this.notes = notes;
+	}
 
 	public double getLength() {
 		return length;
@@ -151,11 +160,11 @@ public class Castle {
 		this.price = price;
 	}
 
-	@Override
-	public String toString() {
-		return "Castle [id=" + id + ", identifier=" + identifier + ", name=" + name + ", description=" + description
-				+ ", length=" + length + ", width=" + width + ", price=" + price + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "Castle [id=" + id + ", identifier=" + identifier + ", name=" + name + ", description=" + description
+//				+ ", length=" + length + ", width=" + width + ", price=" + price + "]";
+//	}
 
 //	public List<String> getDamage() {
 //		return damage;
@@ -165,12 +174,11 @@ public class Castle {
 //		this.damage = damage;
 //	}
 
-//	@Override
-//	public String toString() {
-//		return "Castle [id=" + id + ", identifier=" + identifier + ", name=" + name + ", description=" + description
-//				+ ", notes=" + notes + ", length=" + length + ", width=" + width + ", price=" + price + ", damage="
-//				+ damage + "]";
-//	}
+	@Override
+	public String toString() {
+		return "Castle [id=" + id + ", identifier=" + identifier + ", name=" + name + ", description=" + description
+				+ ", notes=" + notes + ", length=" + length + ", width=" + width + ", price=" + price + "]";
+	}
 	
 	
 
