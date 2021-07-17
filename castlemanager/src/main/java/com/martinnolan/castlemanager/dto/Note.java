@@ -10,15 +10,19 @@ public class Note {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	private String info;
+	
+	//each Note needs to belong to a Castle
+	private Castle castle;
 		
 	public Note() {
 		super();
 	}
 
-	public Note(int id, String info) {
+	public Note(int id, String info, Castle castle) {
 		super();
 		this.id = id;
 		this.info = info;
+		this.castle = castle;
 	}
 
 	public int getId() {
@@ -37,10 +41,20 @@ public class Note {
 		this.info = info;
 	}
 
+	public Castle getCastle() {
+		return castle;
+	}
+
+	public void setCastle(Castle castle) {
+		this.castle = castle;
+	}
+
 	@Override
 	public String toString() {
 		return "Note [id=" + id + ", info=" + info + "]";
 	}
+
+	
 	
 	
 }

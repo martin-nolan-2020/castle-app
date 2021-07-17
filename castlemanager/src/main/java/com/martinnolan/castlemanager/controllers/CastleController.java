@@ -61,12 +61,7 @@ public class CastleController {
 		if(!castle.isPresent()) {
 			throw new CastleNotFoundException("id: " + id);
 		}
-		
-		
-		//implement HATEOAS
-		//"all-castles", SERVER_PATH + "/castles"
-		//getAllCastles
-		
+			
 		//a resource rather than a castle is needed here so that the below link can be appended providing simple HATEOAS
 		EntityModel<Optional<Castle>> resource = EntityModel.of(castle);
 		
