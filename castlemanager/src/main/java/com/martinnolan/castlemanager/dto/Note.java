@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Note {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private String info;
 	
@@ -24,9 +24,16 @@ public class Note {
 		super();
 	}
 
-	public Note(int id, String info, Castle castle) {
+//	public Note(int id, String info, Castle castle) {
+//		super();
+//		this.id = id;
+//		this.info = info;
+//		this.castle = castle;
+//	}
+	
+	public Note(String info, Castle castle) {
 		super();
-		this.id = id;
+		//this.id = id;
 		this.info = info;
 		this.castle = castle;
 	}
@@ -60,6 +67,7 @@ public class Note {
 		return "Note [id=" + id + ", info=" + info + "]";
 	}
 
+	
 	
 	
 	
