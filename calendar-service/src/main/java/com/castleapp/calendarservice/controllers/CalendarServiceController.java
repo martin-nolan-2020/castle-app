@@ -4,20 +4,39 @@ import java.util.Date;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.castleapp.calendarservice.dao.BookingRepository;
 import com.castleapp.calendarservice.dto.Booking;
 
 @RestController
 public class CalendarServiceController {
 
+	//this is used for getting the port value
+	@Autowired
+	Environment environment;
+	
+	@Autowired
+	BookingRepository bookingRepository;
+	
 //	@GetMapping("/test")
 //	public String aTest() {
 //		return new String("Test is good"); 
 //	}	
 	
+	
+	//this endpoint is used when the user wants to check if a Castle is booked for a certain date.
+	//So, the user needs to input the date and Castle id to check if the Castle is available for the date
+	//If it is already booked then the details of the Booking are returned including:
+	//1. id (Booking ID) 
+	//2. dateBooked 
+	//3. the Eircode of the customer who booked
+	//4. the Castle ID
+	//If it has not been booked then return null as there is no matching Booking object found in the database
 	@GetMapping("/calendar/date/{date}/castles/{castleId}")
 	public Booking getDates(@PathVariable String date, @PathVariable int castleId){
 		
@@ -48,9 +67,6 @@ public class CalendarServiceController {
 		
 		//--------------------------------------------//
 		
-		
-		
-		
 //		System.out.println(date);
 		int year = Integer.parseInt(date.substring(0,4));
 //		System.out.println(year);
@@ -60,9 +76,26 @@ public class CalendarServiceController {
 //		System.out.println(day);
 		LocalDate convertToDate = LocalDate.of(year, month, day);
 //		
-		return new Booking(1, convertToDate, "R95N6K6" ,castleId);
+		Booking booking = new Booking(1, convertToDate, "R95N6K6" ,castleId);
+		
+		//this extracts the port
+		String port = environment.getProperty("local.server.port");
+		booking.setEnvironment(port);
+		return booking;
 //		return null;
 		
 	}
+	
+	@GetMapping("bookings")
+	public List<Booking> getAllFromDB(){
+		return bookingRepository.findAll();
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 }
