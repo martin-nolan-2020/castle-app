@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface CalendarProxy {
 
 	//below URL is in the CalendarServiceController 
+	//different to CalendarServiceController however as it returns a String and not a Booking
+	//this is because I don't have a bean that is equivalent to Booking in the castlemanager microservice
+	//*** MAYBE THIS NEEDS TO BE CHANGED IN THE FUTURE TO BE MORE USEFUL?? ***
 	@GetMapping("bookings-by-castle-id/{id}/date/{date}")
 	public String getBookingByCastleId(@PathVariable int id, @PathVariable String date) 
 			//throws RuntimeException

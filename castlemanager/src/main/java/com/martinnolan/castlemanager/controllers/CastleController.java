@@ -148,6 +148,7 @@ public class CastleController {
 		return newCastle;
 	}
 	
+	//feign is included in the URL as it is using the feign client rather than the Rest template - less code involved 
 	@GetMapping("castles-with-bookings-feign/{id}/date/{date}")
 	public Castle getCastleWithBookingInfoFeign(@PathVariable Integer id, @PathVariable String date) {
 		System.out.println("***feign***");
@@ -174,7 +175,7 @@ public class CastleController {
 		//newCastle.setBookings(forEntity.getBody());
 		
 		//no 404 (i.e. a booking of that Castle exists on that date so can set field to "booked")
-		newCastle.setBookedOrAvailable("booked");
+		newCastle.setBookedOrAvailable("booked (checked with calendar microservice - found a booking in its DB)");
 		} catch(FeignException exception) {
 			//catches the 404 Not Found and so setBookedOrAvailable remains at the default value of "available"
 			System.out.println("inside catch part");
