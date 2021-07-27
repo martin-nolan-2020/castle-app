@@ -8,7 +8,13 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+//import org.apache.commons.lang.StringEscapeUtils.*;
+//import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.*;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,12 +23,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.google.gson.Gson;
 import com.martinnolan.castlemanager.dao.CastleRepository;
+import com.martinnolan.castlemanager.dto.Booking;
 import com.martinnolan.castlemanager.dto.Castle;
 import com.martinnolan.castlemanager.dto.Note;
 import com.martinnolan.castlemanager.exceptions.*;
+import com.martinnolan.castlemanager.proxy.CalendarProxy;
+
+import feign.FeignException;
+import net.minidev.json.parser.JSONParser;
+
+//import net.minidev.json.JSONObject;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -37,6 +53,9 @@ public class CastleController {
 	@Autowired
 	CastleRepository castleRepository;
 
+	@Autowired
+	CalendarProxy calendarProxy;
+	
 	//below works
 	@GetMapping("first-test")
 	public String getText() {
@@ -59,23 +78,183 @@ public class CastleController {
 	
 	//return a specific castle by id
 	@GetMapping("castles/{id}")
-	public EntityModel<Optional<Castle>> getCastleById(@PathVariable Integer id) throws RuntimeException {
+	public Optional<Castle> getCastleById(@PathVariable Integer id) throws RuntimeException {
 		Optional<Castle> castle = castleRepository.findById(id);
 		if(!castle.isPresent()) {
 			throw new CastleNotFoundException("id: " + id);
 		}
-			
-		//a resource rather than a castle is needed here so that the below link can be appended providing simple HATEOAS
-		EntityModel<Optional<Castle>> resource = EntityModel.of(castle);
 		
-		//provides a link to all castles in what is returned to localhost:8080/castles/1
-		WebMvcLinkBuilder linkTo = 
-				linkTo(methodOn(this.getClass()).getAllCastles());
+		//****THE BELOW IS NOT WORKING FOR THE MOMENT --> WON'T RETURN NOTES LIST ABOUT A CASTLE??	
+//		//a resource rather than a castle is needed here so that the below link can be appended providing simple HATEOAS
+//		EntityModel<Optional<Castle>> resource = EntityModel.of(castle);
+//		
+//		//provides a link to all castles in what is returned to localhost:8080/castles/1
+//		WebMvcLinkBuilder linkTo = 
+//				linkTo(methodOn(this.getClass()).getAllCastles());
+//		
+//		resource.add(linkTo.withRel("all-users"));
+//		
+//		return resource;
 		
-		resource.add(linkTo.withRel("all-users"));
-		
-		return resource;
+		return castle;
 
+	}
+	
+	@GetMapping("castles-with-bookings/{id}/date/{date}")
+	public Castle getCastleWithBookingInfo(@PathVariable Integer id, @PathVariable String date) {
+		System.out.println("***");
+		System.out.println(id);
+		System.out.println(date);
+		Optional<Castle> castle = castleRepository.findById(id);
+		System.out.println("*!*" + castle);
+		
+		
+		
+		//ResponseEntity<String> forEntity = new RestTemplate().getForEntity("http://localhost:8000/bookings-by-castle-id/3", String.class);
+		//ResponseEntity<String> forEntity = new RestTemplate().getForEntity("http://localhost:8000/bookings-by-castle-id/55/date/2017-02-25", String.class);
+		
+		
+		//try-catch block
+		//https://stackoverflow.com/questions/16194014/spring-mvc-resttemplate-launch-exception-when-http-404-happens
+		//need try catch block in case 404 Not Found is returned
+		//checks if a certain Castle is booked on a certain date - so needs to call Calendar/Booking service to check if there is a match
+		//if there is no match then the default Castle field "bookedOrAvailable "remains at "available"
+		//if there is a match in Calendar/Booking service then Castle field "bookedOrAvailable" is changed to "booked" 
+		try {
+			ResponseEntity<String> forEntity = 
+					new RestTemplate().getForEntity("http://localhost:8000/bookings-by-castle-id/"+id+"/date/"+date, String.class);
+			
+			Castle newCastle = castle.get();
+			//newCastle.setBookings(forEntity.getBody());
+			newCastle.setBookedOrAvailable("booked");
+			
+			System.out.println("*@* " + forEntity);
+			System.out.println("***!*** " + forEntity.getBody());
+			
+		} catch (final HttpClientErrorException e) {
+			// TODO: handle exception
+			System.out.println(e.getStatusCode());
+		    System.out.println(e.getResponseBodyAsString());
+		}
+		
+		//Booking aBooking = new Booking();
+		
+		Castle newCastle = castle.get();
+		//newCastle.setBookings(forEntity.getBody());
+		//newCastle.setBookedOrAvailable("ok");
+
+		
+		//return castle.get();
+		return newCastle;
+	}
+	
+	@GetMapping("castles-with-bookings-feign/{id}/date/{date}")
+	public Castle getCastleWithBookingInfoFeign(@PathVariable Integer id, @PathVariable String date) {
+		System.out.println("***feign***");
+		System.out.println(id);
+		System.out.println(date);
+		Optional<Castle> castle = castleRepository.findById(id);
+		System.out.println("*!*feign***" + castle);
+		
+		
+		//instead of using the RestTemplate as in the previous method (getCastleWithBookingInfo) here using the CalendarProxy as part 
+		//of the FeignClient 
+		//same info as getCastleWithBookingInfo method:
+				//try-catch block
+				//https://stackoverflow.com/questions/16194014/spring-mvc-resttemplate-launch-exception-when-http-404-happens
+				//need try catch block in case 404 Not Found is returned
+				//checks if a certain Castle is booked on a certain date - so needs to call Calendar/Booking service to check if there is a match
+				//if there is no match then the default Castle field "bookedOrAvailable "remains at "available"
+				//if there is a match in Calendar/Booking service then Castle field "bookedOrAvailable" is changed to "booked" 
+
+		try {
+		String bookingString = calendarProxy.getBookingByCastleId(id, date);
+		System.out.println("inside try/catch --> " + bookingString);
+		Castle newCastle = castle.get();
+		//newCastle.setBookings(forEntity.getBody());
+		
+		//no 404 (i.e. a booking of that Castle exists on that date so can set field to "booked")
+		newCastle.setBookedOrAvailable("booked");
+		} catch(FeignException exception) {
+			//catches the 404 Not Found and so setBookedOrAvailable remains at the default value of "available"
+			System.out.println("inside catch part");
+			System.out.println(exception.getMessage());
+			
+		}
+		//System.out.println("*!*!" + bookingString);
+		System.out.println("*!*!!!!!!!*!*!" );
+		
+		//ResponseEntity<String> forEntity = new RestTemplate().getForEntity("http://localhost:8000/bookings-by-castle-id/3", String.class);
+		//ResponseEntity<String> forEntity = new RestTemplate().getForEntity("http://localhost:8000/bookings-by-castle-id/55/date/2017-02-25", String.class);
+		
+		
+		//try-catch block
+		//https://stackoverflow.com/questions/16194014/spring-mvc-resttemplate-launch-exception-when-http-404-happens
+		//need try catch block in case 404 Not Found is returned
+		//checks if a certain Castle is booked on a certain date - so needs to call Calendar/Booking service to check if there is a match
+		//if there is no match then the default Castle field "bookedOrAvailable "remains at "available"
+		//if there is a match in Calendar/Booking service then Castle field "bookedOrAvailable" is changed to "booked" 
+//		try {
+//			ResponseEntity<String> forEntity = 
+//					new RestTemplate().getForEntity("http://localhost:8000/bookings-by-castle-id/"+id+"/date/"+date, String.class);
+//			
+//			Castle newCastle = castle.get();
+//			//newCastle.setBookings(forEntity.getBody());
+//			newCastle.setBookedOrAvailable("booked");
+//			
+//			System.out.println("*@* " + forEntity);
+//			System.out.println("***!*** " + forEntity.getBody());
+//			
+//		} catch (final HttpClientErrorException e) {
+//			// TODO: handle exception
+//			System.out.println(e.getStatusCode());
+//		    System.out.println(e.getResponseBodyAsString());
+//		}
+		
+		//Booking aBooking = new Booking();
+		
+		Castle newCastle = castle.get();
+		//newCastle.setBookings(forEntity.getBody());
+		//newCastle.setBookedOrAvailable("ok");
+
+		
+		//return castle.get();
+		return newCastle;
+	}
+	
+	
+	
+	
+	private String removeQuotesAndUnescape(String uncleanJson) {
+		System.out.println(" before noQuotes === " + uncleanJson);
+	    //String noQuotes = uncleanJson.replaceAll("^\"|\"$", "");
+		//String noQuotes = uncleanJson.replaceAll("(?:[^\"]*\"){4}", "");
+		
+		//currently have: {"id":3,"dateBooked":"2018-02-25","eircode":"S95N7K7","environment":"9000","castle_id":2}
+		//remove 							   " 	and   " from above (5th and 6th)
+		
+		System.out.println(uncleanJson.length());
+		
+		int quotationMarkCount = 0;
+		for(int i = 0; i < uncleanJson.length(); i++) {
+			if(uncleanJson.charAt(i)==34) {
+				quotationMarkCount++;
+			}
+			if((quotationMarkCount==5&&uncleanJson.charAt(i)==34)|(quotationMarkCount==6&&uncleanJson.charAt(i)==34)) {
+				uncleanJson = uncleanJson.substring(0,i) 
+						+ 
+						uncleanJson.substring(i+1)
+						;
+				
+			}		
+		}
+		System.out.println(uncleanJson);
+		
+	    
+		
+		//System.out.println("noQuotes === " + noQuotes);
+	    //return StringEscapeUtils.unescapeJava(noQuotes);
+		return uncleanJson;
 	}
 	
 	//delete a castle by id

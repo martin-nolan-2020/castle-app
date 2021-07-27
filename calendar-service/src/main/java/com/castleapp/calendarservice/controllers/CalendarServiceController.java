@@ -1,17 +1,25 @@
 package com.castleapp.calendarservice.controllers;
 
 import java.util.Date;
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.castleapp.calendarservice.dao.BookingRepository;
 import com.castleapp.calendarservice.dto.Booking;
+
+import exceptions.BookingNotFoundException;
 
 @RestController
 public class CalendarServiceController {
@@ -86,10 +94,54 @@ public class CalendarServiceController {
 		
 	}
 	
+	//return all bookings
 	@GetMapping("bookings")
 	public List<Booking> getAllFromDB(){
 		return bookingRepository.findAll();
 	}
+	
+	//return 1 booking by ID
+	@GetMapping("bookings/{id}")
+	public Optional<Booking> getBookingById(@PathVariable int id) throws RuntimeException {
+		Optional<Booking> bookingFound = bookingRepository.findById(id);
+		if(!bookingFound.isPresent()) {
+			throw new BookingNotFoundException("unable to find booking with id: " + id);		
+		} 
+		
+		return bookingFound;
+		
+	}
+	
+	//2017-02-25 3
+	//return list of bookings with certain CASTLE id
+	@GetMapping("bookings-by-castle-id/{id}/date/{date}")
+	public Booking getBookingByCastleId(@PathVariable int id, @PathVariable String date) throws RuntimeException{
+		LocalDate ld = LocalDate.parse(date);
+		//return bookingRepository.findByCastleId(id);
+		List<Booking> listOfBookings = bookingRepository.findByCastleId(id);
+		Booking aBooking = bookingRepository.findByDateBookedAndCastleId(ld, id);
+		if(aBooking==null) {
+			throw new BookingNotFoundException("Sorry - unable to find booking with id: " + id);		
+		}
+		return aBooking;
+		//return bookingRepository.findByDateBookedAndCastleId(ld, id);
+		//return null;
+	}
+	
+	@PostMapping("bookings")
+	public ResponseEntity<Object> createABooking(@RequestBody Booking booking){
+		Booking savedBooking = bookingRepository.save(booking);
+		
+		URI location = ServletUriComponentsBuilder
+		.fromCurrentRequest()
+		.path("/{id}")
+		.buildAndExpand(savedBooking.getId())
+		.toUri();
+		
+		return ResponseEntity.created(location).build();	
+	}
+	
+	
 	
 	
 	

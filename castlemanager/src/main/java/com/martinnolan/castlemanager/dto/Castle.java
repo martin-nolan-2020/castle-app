@@ -53,6 +53,12 @@ public class Castle {
 //	@OneToMany(targetEntity=Damage.class, mappedBy="castle", fetch=FetchType.EAGER)	
 //	private List<String> damage;
 	
+	//@OneToMany(targetEntity=Note.class, mappedBy="castle", fetch=FetchType.EAGER)
+	//@OneToMany(targetEntity=Note.class, mappedBy="castle", fetch=FetchType.EAGER)
+	
+	@Transient
+	private String bookedOrAvailable="available";
+	
 	public Castle() {
 		super();
 	}
@@ -159,6 +165,8 @@ public class Castle {
 	public void setPrice(double price) {
 		this.price = price;
 	}
+	
+	
 
 //	@Override
 //	public String toString() {
@@ -174,11 +182,28 @@ public class Castle {
 //		this.damage = damage;
 //	}
 
+	public String getBookedOrAvailable() {
+		return bookedOrAvailable;
+	}
+
+	public void setBookedOrAvailable(String bookedOrAvailable) {
+		this.bookedOrAvailable = bookedOrAvailable;
+	}
+
 	@Override
 	public String toString() {
 		return "Castle [id=" + id + ", identifier=" + identifier + ", name=" + name + ", description=" + description
-				+ ", notes=" + notes + ", length=" + length + ", width=" + width + ", price=" + price + "]";
+				+ ", notes=" + notes + ", length=" + length + ", width=" + width + ", price=" + price
+				+ ", bookedOrAvailable=" + bookedOrAvailable + "]";
 	}
+
+//	@Override
+//	public String toString() {
+//		return "Castle [id=" + id + ", identifier=" + identifier + ", name=" + name + ", description=" + description
+//				+ ", notes=" + notes + ", length=" + length + ", width=" + width + ", price=" + price + "]";
+//	}
+	
+	
 	
 	
 
