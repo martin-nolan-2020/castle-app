@@ -37,6 +37,7 @@ public class CalendarServiceController {
 //	}	
 	
 	
+	//---below endpoint is not interacting with DB, it is just creating a new Booking regardless of castleId and date inputs---
 	//this endpoint is used when the user wants to check if a Castle is booked for a certain date.
 	//So, the user needs to input the date and Castle id to check if the Castle is available for the date
 	//If it is already booked then the details of the Booking are returned including:

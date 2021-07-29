@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 //import com.castleapp.calendarservice.dto.Booking;
 
-@FeignClient(name="calendar-service", url = "localhost:8000")
+//@FeignClient(name="calendar-service", url = "localhost:8000")
+//remove url = "localhost:8000" to allow Eureka to perform load balancing
+@FeignClient(name="calendar-service")
 public interface CalendarProxy {
 
 	//below URL is in the CalendarServiceController 
