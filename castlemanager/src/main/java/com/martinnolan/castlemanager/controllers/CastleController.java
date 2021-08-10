@@ -17,10 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
@@ -48,6 +50,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 @RestController
 @Validated
+@CrossOrigin(origins = "http://localhost:4200")	//this deals with the CORS issue when trying to access API from frontend React app
 public class CastleController {
 	
 	@Autowired
@@ -59,7 +62,12 @@ public class CastleController {
 	//below works
 	@GetMapping("first-test")
 	public String getText() {
-		return "this is the first test.";
+		return "this is the first test. hello world";
+	}
+	
+	@GetMapping("second-test-castle-bean")
+	public Castle getCastle() {
+		return new Castle("BS-2", "Big slide", "Blue slide", null ,30.0, 25.0, 160.0);
 	}
 	
 	//below not working now 
@@ -81,8 +89,12 @@ public class CastleController {
 	public Optional<Castle> getCastleById(@PathVariable Integer id) throws RuntimeException {
 		Optional<Castle> castle = castleRepository.findById(id);
 		if(!castle.isPresent()) {
-			throw new CastleNotFoundException("id: " + id);
+			throw new CastleNotFoundException("Oh no. Something has gone wrong! ID: " + id + " not found");
 		}
+		
+		//throw new CastleNotFoundException("Oh no. Something has gone wrong!");
+		//throw new RuntimeException("went wrong!!");
+		//throw new CastleNotFoundException("id: " + id);
 		
 		//****THE BELOW IS NOT WORKING FOR THE MOMENT --> WON'T RETURN NOTES LIST ABOUT A CASTLE??	
 //		//a resource rather than a castle is needed here so that the below link can be appended providing simple HATEOAS
@@ -120,22 +132,38 @@ public class CastleController {
 		//checks if a certain Castle is booked on a certain date - so needs to call Calendar/Booking service to check if there is a match
 		//if there is no match then the default Castle field "bookedOrAvailable "remains at "available"
 		//if there is a match in Calendar/Booking service then Castle field "bookedOrAvailable" is changed to "booked" 
+//		try {
+//			ResponseEntity<String> forEntity = 
+//					new RestTemplate().getForEntity("http://localhost:8000/bookings-by-castle-id/"+id+"/date/"+date, String.class);
+//			
+//			Castle newCastle = castle.get();
+//			//newCastle.setBookings(forEntity.getBody());
+//			newCastle.setBookedOrAvailable("booked");
+//			
+//			System.out.println("*@* " + forEntity);
+//			System.out.println("***!*** " + forEntity.getBody());
+//			
+//		} catch (final HttpClientErrorException e) {
+//			// TODO: handle exception
+//			System.out.println(e.getStatusCode());
+//		    System.out.println(e.getResponseBodyAsString());
+//		}
+		
 		try {
-			ResponseEntity<String> forEntity = 
-					new RestTemplate().getForEntity("http://localhost:8000/bookings-by-castle-id/"+id+"/date/"+date, String.class);
-			
+			String bookingString = calendarProxy.getBookingByCastleId(id, date);
+			System.out.println("inside try/catch --> " + bookingString);
 			Castle newCastle = castle.get();
 			//newCastle.setBookings(forEntity.getBody());
-			newCastle.setBookedOrAvailable("booked");
 			
-			System.out.println("*@* " + forEntity);
-			System.out.println("***!*** " + forEntity.getBody());
-			
-		} catch (final HttpClientErrorException e) {
-			// TODO: handle exception
-			System.out.println(e.getStatusCode());
-		    System.out.println(e.getResponseBodyAsString());
-		}
+			//no 404 (i.e. a booking of that Castle exists on that date so can set field to "booked")
+			newCastle.setBookedOrAvailable("booked (checked with calendar microservice - found a booking in its DB)");
+			} catch(FeignException exception) {
+				//catches the 404 Not Found and so setBookedOrAvailable remains at the default value of "available"
+				System.out.println("inside catch part");
+				System.out.println(exception.getMessage());
+				
+				
+			}
 		
 		//Booking aBooking = new Booking();
 		
@@ -150,7 +178,7 @@ public class CastleController {
 	
 	//feign is included in the URL as it is using the feign client rather than the Rest template - less code involved 
 	@GetMapping("castles-with-bookings-feign/{id}/date/{date}")
-	public Castle getCastleWithBookingInfoFeign(@PathVariable Integer id, @PathVariable String date) {
+	public Castle getCastleWithBookingInfoFeign(@PathVariable Integer id, @PathVariable String date) throws RuntimeException {
 		System.out.println("***feign***");
 		System.out.println(id);
 		System.out.println(date);
@@ -180,6 +208,7 @@ public class CastleController {
 			//catches the 404 Not Found and so setBookedOrAvailable remains at the default value of "available"
 			System.out.println("inside catch part");
 			System.out.println(exception.getMessage());
+			throw new CastleNotFoundException("Oh no!! Something has gone wrong! ID: " + id + " not found");
 			
 		}
 		//System.out.println("*!*!" + bookingString);
@@ -259,6 +288,7 @@ public class CastleController {
 	}
 	
 	//delete a castle by id
+	//@CrossOrigin(origins = "http://localhost:4200")	//this deals with the CORS issue when trying to access API from frontend React app
 	@DeleteMapping("castles/{id}")
 	public String deleteACastle(@PathVariable Integer id) throws RuntimeException{
 		Optional<Castle> castle = castleRepository.findById(id);
@@ -284,6 +314,34 @@ public class CastleController {
 		
 		return ResponseEntity.created(location).build();	
 	}
+	
+	@PutMapping("castles/{id}")
+	public ResponseEntity<Castle> updateACastle(@PathVariable Integer id, @RequestBody Castle updatedCastle) 
+				//throws RuntimeException 
+				{
+		Optional<Castle> aFoundCastle = castleRepository.findById(id);
+		if(!aFoundCastle.isPresent()){
+			//throw new CastleNotFoundException("not found. ID is: " + id);
+			Castle savedCastle = castleRepository.save(updatedCastle);
+			URI location = ServletUriComponentsBuilder
+					.fromCurrentRequest()
+					.path("/{id}")
+					.buildAndExpand(savedCastle.getId())
+					.toUri();
+				
+				return ResponseEntity.created(location).build();
+			
+			
+		} else {
+			Castle foundCastle = aFoundCastle.get();
+			foundCastle.setDescription(updatedCastle.getDescription());
+			foundCastle.setPrice(updatedCastle.getPrice());
+			castleRepository.save(foundCastle);
+			return new ResponseEntity<Castle>(foundCastle, HttpStatus.OK);
+		}
+		
+	}
+	
 	
 	//derived query to get all castles under certain length
 	@GetMapping("max-length/{length}")
