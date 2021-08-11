@@ -68,7 +68,7 @@ public class CastleController {
 	
 	@GetMapping("second-test-castle-bean")
 	public Castle getCastle() {
-		return new Castle("BS-2", "Big slide", "Blue slide", null ,30.0, 25.0, 160.0);
+		return new Castle("BS-2", "Big slide", "Blue slide", null ,30.0, 25.0, 160.0, "https://bouncycastlenetwork-res.cloudinary.com/image/upload/f_auto,q_auto,c_limit,w_500/d573bff20c31fe487e116b5760f41036");
 	}
 	
 	//below not working now 
@@ -197,10 +197,11 @@ public class CastleController {
 				//if there is no match then the default Castle field "bookedOrAvailable "remains at "available"
 				//if there is a match in Calendar/Booking service then Castle field "bookedOrAvailable" is changed to "booked" 
 
+		Castle newCastle = castle.get();
 		try {
 		String bookingString = calendarProxy.getBookingByCastleId(id, date);
 		System.out.println("inside try/catch --> " + bookingString);
-		Castle newCastle = castle.get();
+//		Castle newCastle = castle.get();
 		//newCastle.setBookings(forEntity.getBody());
 		
 		//no 404 (i.e. a booking of that Castle exists on that date so can set field to "booked")
@@ -209,7 +210,7 @@ public class CastleController {
 			//catches the 404 Not Found and so setBookedOrAvailable remains at the default value of "available"
 			System.out.println("inside catch part");
 			System.out.println(exception.getMessage());
-			throw new CastleNotFoundException("Oh no!! Something has gone wrong! ID: " + id + " not found");
+			//throw new CastleNotFoundException("Oh no!! Something has gone wrong! ID: " + id + " not found");
 			
 		}
 		//System.out.println("*!*!" + bookingString);
@@ -244,7 +245,7 @@ public class CastleController {
 		
 		//Booking aBooking = new Booking();
 		
-		Castle newCastle = castle.get();
+		//Castle newCastle = castle.get();
 		//newCastle.setBookings(forEntity.getBody());
 		//newCastle.setBookedOrAvailable("ok");
 

@@ -21,7 +21,7 @@ public class Castle {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //https://stackoverflow.com/questions/49813666/table-dbname-hibernate-sequence-doesnt-exist
 	private int id;
 	
-	@NotNull(message = "Identifier cannot be null")
+	//@NotNull(message = "Identifier cannot be null")
 	@ApiModelProperty(notes = "Identifier cannot be null")
 	private String identifier;
 	
@@ -36,15 +36,14 @@ public class Castle {
 	@OneToMany(targetEntity=Note.class, mappedBy="castle", fetch=FetchType.EAGER)
 	private List<Note> notes;
 	
-	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	//@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
 	@DecimalMax(value = "100.0", inclusive = false)  //https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
 	@ApiModelProperty(notes = "Length can be between 0.1 and 99.9")
-	
 	private double length;
-	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
-	@DecimalMax(value = "100.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
-	@ApiModelProperty(notes = "Width can be between 0.1 and 99.9")
 	
+	//@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@DecimalMax(value = "100.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
+	@ApiModelProperty(notes = "Width can be between 0.1 and 99.9")	
 	private double width;
 	@DecimalMin(value = "0.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
 	@DecimalMax(value = "1000.0", inclusive = false)	//https://www.tabnine.com/code/java/classes/javax.validation.constraints.DecimalMax
@@ -56,6 +55,8 @@ public class Castle {
 	//@OneToMany(targetEntity=Note.class, mappedBy="castle", fetch=FetchType.EAGER)
 	//@OneToMany(targetEntity=Note.class, mappedBy="castle", fetch=FetchType.EAGER)
 	
+	private String imageurl;
+	
 	@Transient
 	private String bookedOrAvailable="available";
 	
@@ -64,7 +65,7 @@ public class Castle {
 	}
 
 	public Castle(String identifier, String name, String description, List<Note> notes, double length,
-			double width, double price) {
+			double width, double price, String imageurl) {
 		super();
 		//this.id = id;
 		this.identifier = identifier;
@@ -75,6 +76,7 @@ public class Castle {
 		this.width = width;
 		this.price = price;
 		//this.damage = damage;
+		this.imageurl = imageurl;
 	}
 	
 	
@@ -189,13 +191,32 @@ public class Castle {
 	public void setBookedOrAvailable(String bookedOrAvailable) {
 		this.bookedOrAvailable = bookedOrAvailable;
 	}
+	
+	
+
+	public String getImageurl() {
+		return imageurl;
+	}
+
+	public void setImageurl(String imageurl) {
+		this.imageurl = imageurl;
+	}
 
 	@Override
 	public String toString() {
 		return "Castle [id=" + id + ", identifier=" + identifier + ", name=" + name + ", description=" + description
-				+ ", notes=" + notes + ", length=" + length + ", width=" + width + ", price=" + price
-				+ ", bookedOrAvailable=" + bookedOrAvailable + "]";
+				+ ", notes=" + notes + ", length=" + length + ", width=" + width + ", price=" + price + ", imageurl="
+				+ imageurl + ", bookedOrAvailable=" + bookedOrAvailable + "]";
 	}
+
+//	@Override
+//	public String toString() {
+//		return "Castle [id=" + id + ", identifier=" + identifier + ", name=" + name + ", description=" + description
+//				+ ", notes=" + notes + ", length=" + length + ", width=" + width + ", price=" + price
+//				+ ", bookedOrAvailable=" + bookedOrAvailable + "]";
+//	}
+	
+	
 
 //	@Override
 //	public String toString() {
