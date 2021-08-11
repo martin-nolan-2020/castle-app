@@ -50,7 +50,8 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 @RestController
 @Validated
-@CrossOrigin(origins = "http://localhost:4200")	//this deals with the CORS issue when trying to access API from frontend React app
+//@CrossOrigin(origins = "http://localhost:4200")	//this deals with the CORS issue when trying to access API from frontend React app
+//@CrossOrigin(origins = "http://localhost:4200")	//this deals with the CORS issue when trying to access API from frontend React app
 public class CastleController {
 	
 	@Autowired
@@ -329,7 +330,7 @@ public class CastleController {
 					.buildAndExpand(savedCastle.getId())
 					.toUri();
 				
-				return ResponseEntity.created(location).build();
+			return ResponseEntity.created(location).build();
 			
 			
 		} else {
