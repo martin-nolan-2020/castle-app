@@ -28,9 +28,9 @@ public class Booking {
 		super();
 	}
 
-	public Booking(int id, LocalDate date_booked, String eircode, int castle_id) {
+	public Booking(LocalDate date_booked, String eircode, int castle_id) {
 		super();
-		this.id = id;
+		//this.id = id;
 		this.dateBooked = date_booked;
 		this.eircode = eircode;
 		this.castleId = castle_id;

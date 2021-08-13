@@ -177,6 +177,30 @@ public class CastleController {
 		return newCastle;
 	}
 	
+	
+	
+//	@PostMapping("castles")
+//	public ResponseEntity<Object> addACastle(@Valid @RequestBody Castle newCastle){
+//		Castle savedCastle = castleRepository.save(newCastle);
+//		
+//		URI location = ServletUriComponentsBuilder
+//			.fromCurrentRequest()
+//			.path("/{id}")
+//			.buildAndExpand(savedCastle.getId())
+//			.toUri();
+//		
+//		return ResponseEntity.created(location).build();	
+//	}
+	
+//	//make a booking for a Castle
+//	@PostMapping("castles-with-bookings-feign/{id}/date/{date}")
+//	public ResponseEntity<Object> addABooking(@PathVariable Integer id, @PathVariable String date){
+//		
+//		return null;
+//		
+//	}
+	
+	
 	//feign is included in the URL as it is using the feign client rather than the Rest template - less code involved 
 	@GetMapping("castles-with-bookings-feign/{id}/date/{date}")
 	public Castle getCastleWithBookingInfoFeign(@PathVariable Integer id, @PathVariable String date) throws RuntimeException {
@@ -253,10 +277,7 @@ public class CastleController {
 		//return castle.get();
 		return newCastle;
 	}
-	
-	
-	
-	
+		
 	private String removeQuotesAndUnescape(String uncleanJson) {
 		System.out.println(" before noQuotes === " + uncleanJson);
 	    //String noQuotes = uncleanJson.replaceAll("^\"|\"$", "");

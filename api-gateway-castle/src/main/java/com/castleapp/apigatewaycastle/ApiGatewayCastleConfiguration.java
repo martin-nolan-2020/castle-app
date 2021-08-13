@@ -39,6 +39,8 @@ public class ApiGatewayCastleConfiguration {
 						.uri("lb://castlemanager"))	
 				.route(p -> p.path("/calendar/**")		//from http://localhost:8765/calendar-service/calendar/date/2021-05-23/castles/77
 						.uri("lb://calendar-service"))	//to http://localhost:8765/calendar/date/2021-05-23/castles/77
+				.route(p -> p.path("/bookings/**")
+						.uri("lb://calendar-service"))			
 				.build();
 	}
 

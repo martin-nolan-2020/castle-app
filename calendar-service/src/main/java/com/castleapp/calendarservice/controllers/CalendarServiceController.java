@@ -85,7 +85,7 @@ public class CalendarServiceController {
 //		System.out.println(day);
 		LocalDate convertToDate = LocalDate.of(year, month, day);
 //		
-		Booking booking = new Booking(1, convertToDate, "R95N6K6" ,castleId);
+		Booking booking = new Booking(convertToDate, "R95N6K6" ,castleId);
 		
 		//this extracts the port
 		String port = environment.getProperty("local.server.port");
@@ -129,9 +129,29 @@ public class CalendarServiceController {
 		//return null;
 	}
 	
-	@PostMapping("bookings")
-	public ResponseEntity<Object> createABooking(@RequestBody Booking booking){
-		Booking savedBooking = bookingRepository.save(booking);
+//	@PostMapping("bookings")
+//	public ResponseEntity<Object> createABooking(@RequestBody Booking booking){
+//		Booking savedBooking = bookingRepository.save(booking);
+//		
+//		URI location = ServletUriComponentsBuilder
+//		.fromCurrentRequest()
+//		.path("/{id}")
+//		.buildAndExpand(savedBooking.getId())
+//		.toUri();
+//		
+//		return ResponseEntity.created(location).build();	
+//	}
+	
+	@PostMapping("bookings/castle-id/{castleId}/date/{date}")
+	public ResponseEntity<Object> createABooking(@PathVariable Integer castleId, @PathVariable String date){
+		System.out.println("inside createABooking");
+
+		//LocalDate future = LocalDate.now().plusDays(10);
+		LocalDate localDate = LocalDate.parse(date);
+		String eircode = "FAKE123";
+		Booking aNewBooking =new Booking(localDate, eircode, castleId);
+		
+		Booking savedBooking = bookingRepository.save(aNewBooking);
 		
 		URI location = ServletUriComponentsBuilder
 		.fromCurrentRequest()
@@ -140,6 +160,7 @@ public class CalendarServiceController {
 		.toUri();
 		
 		return ResponseEntity.created(location).build();	
+//		return null;
 	}
 	
 	
