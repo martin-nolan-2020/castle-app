@@ -1,5 +1,6 @@
-package com.castleapp.apigatewaycastle.basic.auth;
+//package com.castleapp.basic.auth;
 //
+//import org.springframework.context.annotation.ComponentScan;
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.http.HttpMethod;
 //import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,7 @@ package com.castleapp.apigatewaycastle.basic.auth;
 //
 //@Configuration
 //@EnableWebSecurity
+////@ComponentScan("com.castleapp.apigatewaycastle")
 //public class SpringSecurityConfigurationBasicAuth extends WebSecurityConfigurerAdapter {
 //
 //	@Override
