@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ import exceptions.BookingNotFoundException;
 
 @RestController
 public class CalendarServiceController {
+	
+	private Logger logger = LoggerFactory.getLogger(CalendarServiceController.class);
 
 	//this is used for getting the port value
 	@Autowired
@@ -104,6 +108,7 @@ public class CalendarServiceController {
 	//return 1 booking by ID
 	@GetMapping("bookings/{id}")
 	public Optional<Booking> getBookingById(@PathVariable int id) throws RuntimeException {
+		logger.info("getBookingById called in calendar service with the id of {}",id);
 		Optional<Booking> bookingFound = bookingRepository.findById(id);
 		if(!bookingFound.isPresent()) {
 			throw new BookingNotFoundException("unable to find booking with id: " + id);		
