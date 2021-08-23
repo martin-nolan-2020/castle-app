@@ -18,7 +18,7 @@
 --
 -- Table structure for table `castle`
 --
-USE `bookingdb`;
+USE `calendardb`;
 DROP TABLE IF EXISTS `booking`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -41,7 +41,7 @@ LOCK TABLES `booking` WRITE;
 INSERT INTO `booking` VALUES (1,'2021-09-23','R95N6K6',1,'8000'),
 (2,'2021-09-24','R95N6K6',1,'9000'),
 (3,'2021-09-25','S95N7K7',2,'9000'),
-(4,'2021-09-25','S95N7K7',3,'9000')
+(4,'2021-09-28','S95N7K7',3,'9000')
 
 
 ;
