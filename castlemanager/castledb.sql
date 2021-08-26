@@ -18,7 +18,8 @@
 --
 -- Table structure for table `castle`
 --
-USE `castledb`;
+-- USE `castledb`;
+USE `castlemanagerdb`;
 DROP TABLE IF EXISTS `castle`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -31,6 +32,7 @@ CREATE TABLE `castle` (
   `width` double DEFAULT NULL,
   `price` double DEFAULT NULL,
   `bookings` varchar(200) DEFAULT NULL,
+  `imageurl` varchar(300) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -41,11 +43,11 @@ CREATE TABLE `castle` (
 
 LOCK TABLES `castle` WRITE;
 /*!40000 ALTER TABLE `castle` DISABLE KEYS */;
-INSERT INTO `castle` VALUES (1,'AC-4','105ft Assault Course','Red assault course',45.0,18.0,180.0,null),
-(2,'AC-5','35ft Assault Course','Blue assault course',35.0,18.0,160.0,null),
-(3,'AC-6','47ft Assault Course','Pink assault course',47.0,18.0,160.0,null),
-(4,'AC-7','37ft Assault Course','Yellow assault course',37.0,18.0,160.0,null),
-(5,'AC-8','40ft Assault Course','Purple assault course',40.0,18.0,160.0,null)
+INSERT INTO `castle` VALUES (1,'AC-4','105ft Assault Course','Red assault course',45.0,18.0,180.0,null,'https://bouncycastlenetwork-res.cloudinary.com/image/upload/f_auto,q_auto,c_limit,w_500,fl_png8/9b0ce0adf543ae478153a85e4ec07674'),
+(2,'AC-5','35ft Assault Course','Blue assault course',35.0,18.0,160.0,null,'https://bouncycastlenetwork-res.cloudinary.com/image/upload/f_auto,q_auto,c_limit,w_500/133aeb2b273704299fb319bae7ebc7d0'),
+(3,'AC-6','47ft Assault Course','Pink assault course',47.0,18.0,160.0,null,null),
+(4,'AC-7','37ft Assault Course','Yellow assault course',37.0,18.0,160.0,null,null),
+(5,'AC-8','40ft Assault Course','Purple assault course',40.0,18.0,160.0,null,null)
 
 
 ;

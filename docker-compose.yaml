@@ -3,12 +3,28 @@ version: '3.7'
 services:
   calendar-service:
     image: calendar-service
+    mem_limit: 700m
     ports:
       - "8000:8000"
     networks:
       - calendar-mysql
     depends_on:
       mysqldb:
+        condition: service_healthy
+      naming-server-castle:
+        condition: service_healthy
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server-castle:8761/eureka
+
+  castlemanager:
+    image: martinnolan73517/castle-app-castlemanager:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8100:8100"
+    networks:
+      - calendar-mysql
+    depends_on:
+      mysqldb2:
         condition: service_healthy
       naming-server-castle:
         condition: service_healthy
@@ -27,8 +43,23 @@ services:
     healthcheck:
       test: "exit 0"
       
+  mysqldb2:
+    image: mysql:latest
+    networks:
+      - calendar-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=castlemanagerdb  
+    volumes:
+    - ./castlemanager/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: "exit 0"
+      
   naming-server-castle:
     image: martinnolan73517/castle-app-naming-server-castle:0.0.1-SNAPSHOT
+    mem_limit: 700m
     ports:
       - "8761:8761"
     networks:
