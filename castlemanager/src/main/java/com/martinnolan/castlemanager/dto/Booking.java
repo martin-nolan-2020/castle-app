@@ -20,7 +20,8 @@ public class Booking {
 	private LocalDate dateBooked;
 	private String eircode;
 	//@Column(name = "castle_id")
-	private int castleId;
+	//private int castleId;		%$%
+	private int castleid;
 	//environment provides port information
 	private String environment;
 	
@@ -28,12 +29,12 @@ public class Booking {
 		super();
 	}
 
-	public Booking(int id, LocalDate date_booked, String eircode, int castle_id) {
+	public Booking(int id, LocalDate date_booked, String eircode, int castleid) {
 		super();
 		this.id = id;
 		this.dateBooked = date_booked;
 		this.eircode = eircode;
-		this.castleId = castle_id;
+		this.castleid = castleid;
 	}
 
 	public int getId() {
@@ -60,12 +61,12 @@ public class Booking {
 		this.eircode = eircode;
 	}
 
-	public int getCastle_id() {
-		return castleId;
+	public int getCastleid() {
+		return castleid;
 	}
 
-	public void setCastle_id(int castle_id) {
-		this.castleId = castle_id;
+	public void setCastleid(int castleid) {
+		this.castleid = castleid;
 	}
 	
 	public String getEnvironment() {
@@ -78,7 +79,7 @@ public class Booking {
 
 	@Override
 	public String toString() {
-		return "Booking [id=" + id + ", dateBooked=" + dateBooked + ", eircode=" + eircode + ", castleId=" + castleId
+		return "Booking [id=" + id + ", dateBooked=" + dateBooked + ", eircode=" + eircode + ", castleId=" + castleid
 				+ ", environment=" + environment + "]";
 	}
 	

@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Castle means each unit for hire")
 @Entity
+@Table(name = "castle")
 public class Castle {
 
 	@Id

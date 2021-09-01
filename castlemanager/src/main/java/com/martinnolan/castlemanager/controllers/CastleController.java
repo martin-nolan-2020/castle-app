@@ -82,6 +82,7 @@ public class CastleController {
 	//return all castles
 	@GetMapping("castles")
 	public List<Castle> getAllCastles(){
+		System.out.println("***inside get all - before ***");
 		return castleRepository.findAll();
 	}
 	
@@ -151,7 +152,7 @@ public class CastleController {
 //		}
 		
 		try {
-			String bookingString = calendarProxy.getBookingByCastleId(id, date);
+			String bookingString = calendarProxy.getBookingByCastleid(id, date);		// %$%
 			System.out.println("inside try/catch --> " + bookingString);
 			Castle newCastle = castle.get();
 			//newCastle.setBookings(forEntity.getBody());
@@ -223,7 +224,7 @@ public class CastleController {
 
 		Castle newCastle = castle.get();
 		try {
-		String bookingString = calendarProxy.getBookingByCastleId(id, date);
+		String bookingString = calendarProxy.getBookingByCastleid(id, date);		// %$%
 		System.out.println("inside try/catch --> " + bookingString);
 //		Castle newCastle = castle.get();
 		//newCastle.setBookings(forEntity.getBody());
