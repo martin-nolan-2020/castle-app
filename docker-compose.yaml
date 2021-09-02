@@ -1,72 +1,132 @@
 version: '3.7'
 
 services:
-  calendar-service:
-    image: calendar-service
-    mem_limit: 700m
-    ports:
-      - "8000:8000"
-    networks:
-      - calendar-mysql
-    depends_on:
-      mysqldb:
-        condition: service_healthy
-      naming-server-castle:
-        condition: service_healthy
-    environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server-castle:8761/eureka
-
-  castlemanager:
-    image: martinnolan73517/castle-app-castlemanager:0.0.1-SNAPSHOT
-    mem_limit: 700m
-    ports:
-      - "8100:8100"
-    networks:
-      - calendar-mysql
-    depends_on:
-      mysqldb2:
-        condition: service_healthy
-      naming-server-castle:
-        condition: service_healthy
-    environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server-castle:8761/eureka
- 
-  mysqldb:
-    image: mysql:latest
-    networks:
-      - calendar-mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=calendardb  
-    volumes:
-    - ./calendar-service/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: "exit 0"
-      
-  mysqldb2:
-    image: mysql:latest
-    networks:
-      - calendar-mysql
-    ports:
-      - "3307:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=castlemanagerdb  
-    volumes:
-    - ./castlemanager/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: "exit 0"
+#  calendar-service:
+##    image: calendar-service
+#    image: martinnolan73517/castle-app-calendar-service:0.0.1-SNAPSHOT
+#    mem_limit: 670m
+#    ports:
+#      - "8000:8000"
+#    networks:
+#      - calendar-mysql
+#    depends_on:
+##      mysqldb:
+##        condition: service_healthy
+#      naming-server-castle:
+#        condition: service_healthy
+#      rabbitmq:
+#        condition: service_healthy
+#    environment:
+#      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server-castle:8761/eureka
+#      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+#      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+#      SPRING_RABBITMQ_HOST: rabbitmq
+#      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+#
+#  castlemanager:
+#    image: martinnolan73517/castle-app-castlemanager:0.0.1-SNAPSHOT
+#    mem_limit: 670m
+#    ports:
+#      - "8100:8100"
+#    networks:
+#      - calendar-mysql
+#    depends_on:
+##      mysqldb2:
+##        condition: service_healthy
+#      naming-server-castle:
+#        condition: service_healthy
+#      rabbitmq:
+#        condition: service_healthy
+#    environment:
+#      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server-castle:8761/eureka
+#      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+#      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+#      SPRING_RABBITMQ_HOST: rabbitmq
+#      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+# 
+#  mysqldb:
+#    image: mysql:latest
+#    networks:
+#      - calendar-mysql
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=root
+#      - MYSQL_DATABASE=calendardb  
+#    volumes:
+#    - ./calendar-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+#    healthcheck:
+#      test: "exit 0"
+#      
+#  mysqldb2:
+#    image: mysql:latest
+#    networks:
+#      - calendar-mysql
+#    ports:
+#      - "3307:3306"
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=root
+##      - MYSQL_DATABASE=castlemanagerdb
+#      - MYSQL_DATABASE=castledb  
+#    volumes:
+#    - ./castlemanager/init.sql:/docker-entrypoint-initdb.d/init.sql
+#    healthcheck:
+#      test: "exit 0"
       
   naming-server-castle:
     image: martinnolan73517/castle-app-naming-server-castle:0.0.1-SNAPSHOT
-    mem_limit: 700m
+#    mem_limit: 635m
     ports:
       - "8761:8761"
     networks:
       - calendar-mysql
     healthcheck:
       test: "exit 0"
-    
+      
+  zipkin-server:
+    image: openzipkin/zipkin:latest
+    mem_limit: 300m
+    ports:
+      - "9411:9411"
+    networks:
+      - calendar-mysql
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+#    healthcheck:
+#      test: "exit 0"
+    environment:
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      
+  rabbitmq:
+#    image: rabbitmq:3.5.3-management
+    image: arm64v8/rabbitmq:latest
+    mem_limit: 300m
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - calendar-mysql
+    healthcheck:
+      test: "exit 0"
+      
+  api-gateway:
+    image: martinnolan73517/castle-app-api-gateway-castle:0.0.1-SNAPSHOT
+#    mem_limit: 670m
+    ports:
+      - "8765:8765"
+    networks:
+      - calendar-mysql
+    depends_on:
+
+      naming-server-castle:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server-castle:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
 
 networks:
   calendar-mysql: 
